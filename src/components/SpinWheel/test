@@ -1,0 +1,114 @@
+
+
+
+    //const wheel = Object.assign(wheelfeature, options);
+    const topPosition = (num, angle) =>
+    {
+        // set starting index and angle offset based on list length
+        // works upto 9 options
+        let topSpot = null;
+        let degreesOff = null;
+        if (num === 9)
+        {
+            topSpot = 7;
+            degreesOff = Math.PI / 2 - angle * 2;
+        } else if (num === 8)
+        {
+            topSpot = 6;
+            degreesOff = 0;
+        } else if (num <= 7 && num > 4)
+        {
+            topSpot = num - 1;
+            degreesOff = Math.PI / 2 - angle;
+        } else if (num === 4)
+        {
+            topSpot = num - 1;
+            degreesOff = 0;
+        } else if (num <= 3)
+        {
+            topSpot = num;
+            degreesOff = Math.PI / 2;
+        }
+        setWheel({
+            ...list,
+            top: topSpot - 1,
+            offset: degreesOff
+        });
+    }
+
+    const renderSector=(index, text, start, arc, color,score)=> {
+        // create canvas arc for each list element
+        let canvas = document.getElementById("wheel");
+        let ctx = canvas.getContext("2d");
+        let x = canvas.width / 2;
+        let y = canvas.height / 2;
+        let radius = list.radius;
+        let startAngle = start;
+        let endAngle = start + arc;
+        let angle = index * arc;
+        let baseSize = radius * 3.33;
+        let textRadius = baseSize - 150;
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, startAngle, endAngle, false);
+        ctx.lineWidth = radius * 2;
+        ctx.strokeStyle = color;
+
+        ctx.font = "17px Arial";
+        ctx.fillStyle = "black";
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(
+            baseSize + Math.cos(angle - arc / 2) * textRadius,
+            baseSize + Math.sin(angle - arc / 2) * textRadius
+        );
+        ctx.rotate(angle - arc / 2 + Math.PI / 2);
+        //console.log(text.key)
+        ctx.fillText(text.key, -ctx.measureText(text.key).width / 2, 0);
+        ctx.restore();
+    }
+
+  
+
+   
+    
+
+   
+
+    useEffect(() =>
+    {  
+        //options = Object.assign(wheelOptions, spin);
+
+
+       // setOddOptions({  spin: { score: 0, themecolor: "red" } })
+
+        let numOptions = Object.keys(wheelOptions).length;
+        let arcSize = (2 * Math.PI) / numOptions;
+
+        //setWheel({wheelfeature})
+        setWheel({
+            ...list,
+            angle: arcSize
+        });
+        // get index of starting position of selector
+        topPosition(numOptions, arcSize);
+
+
+        // dynamically generate sectors from state list
+        let angle = 0;
+        for (let i = 0; i < numOptions; i++)
+        {
+            Object.entries(options).map(([key, value], k) =>
+            {
+                console.log(options)
+                renderSector(k + 1, { key }, angle, arcSize, value.themecolor, value.score)
+
+            })
+            angle += arcSize
+        }
+
+
+    },[])
+    
+    // determine number/size of sectors that need to created

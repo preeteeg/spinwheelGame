@@ -1,13 +1,11 @@
 import React, { useRef, useState, useEffect} from 'react';
 import OdddsPanel from './odds.component';
 import {Jumbotron,Row,Container,Col,Button} from 'react-bootstrap';
-
 import PossibleWin from './PossibleWin';
 import InputField from './fields/InputField.component';
-import Wheel from './Wheel'
 import axios from 'axios'
 import PlayerBalance from './PlayerBalance';
-import WheelSquare from './squaredOdds'
+import SpinWheel from './SpinWheel/SpinWheel';
 const Home=()=>
 {
 
@@ -17,19 +15,26 @@ const Home=()=>
   const [bettingId, setBettingSessionId] = useState(3)
   const [isLoading, setIsLoading] = useState(false)
   const endpoint = `http://localhost:8888/bettingGames/api/v1/game/read_single.php?id=${gameid}`;
-  const [randomNum,setRandomNum]=useState({})
+  const [randomNum, setRandomNum] = useState({})
+  const [spinning, setSpinning] = useState(false)
 
-  React.useEffect(() =>
+
+  //Load of odds selection
+  useEffect(() =>
   {
     const fetchData = async () =>
     {
-      const response = await axios.get(endpoint);
-      setPredictions(JSON.parse(response.data.predictions));
-      //console.log(typeof predictions)
-    }
+      setIsLoading(true);
+
+      const response = await axios(endpoint);
+
+      setPredictions(JSON.parse(response.data.predictions))
+
+      setIsLoading(false);
+    };
 
     fetchData();
-  }, []);
+  }, [endpoint]);
 
 
 
@@ -46,7 +51,7 @@ const Home=()=>
   {
     setData(prev => ({ ...prev, [name]: value }))
     setError("")
-   // setOdd(prev => ({ ...prev, [name]: value }))
+  
  
   }
 
@@ -82,9 +87,11 @@ const Home=()=>
     {
       const min = 1;
       const max = 20;
-     // const rand = min + Math.random() * (max - min);
+     
       setRandomNum({ randomNum: generateNumber(min,max) });
-      console.log(randomNum)
+      setSpinning(true)
+      setIsLoading(true)
+    
     }
   }
   const generateNumber = (min, max) =>
@@ -98,11 +105,10 @@ const Home=()=>
       
        <Container className="p-3">
        <Jumbotron className="pb-1">
-          <h1 className="header">Spin wheel Game</h1>
+          <h1 className="header">Spin wheel Game </h1>
           <Container>
             <Row>
-              <Col><Wheel wheelOptions={predictions} /></Col>
-              <Col><WheelSquare wheelOptions={predictions} random={randomNum}/></Col>
+              <Col><SpinWheel predictions={predictions} spinStatus={spinning}/></Col>
               <Col>
 
                 <form onSubmit={handleSubmit}>

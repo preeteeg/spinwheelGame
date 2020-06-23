@@ -16,6 +16,7 @@ function Wheel({ wheelOptions })
                         <div className={`wheel-item ${value.themecolor}`} key={key} style={{ '--item-nb': index}}>
                             {key}
                         </div> 
+         
                     )
                 }
     
