@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle,useRef }from 'react'
 import axios from 'axios'
-import InputField from './fields/InputField.component'
+import InputField from '../fields/InputField.component'
 
 const OdddsPanel = forwardRef((props, ref) =>
 {

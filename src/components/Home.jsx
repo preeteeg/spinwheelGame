@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect} from 'react';
-import OdddsPanel from './odds.component';
+import OdddsPanel from '../components/oddSelectors/odds.component';
 import {Jumbotron,Row,Container,Col,Button} from 'react-bootstrap';
 import PossibleWin from './PossibleWin';
 import InputField from './fields/InputField.component';
@@ -11,13 +11,14 @@ const Home=()=>
 
   const [predictions, setPredictions] = useState({})
   const [gameid, setgameId] = useState(3)
-  const [userid, setUserId] = useState(1)
+  const [userid, setUserId] = useState(localStorage.getItem('userId'))
   const [bettingId, setBettingSessionId] = useState(3)
   const [isLoading, setIsLoading] = useState(false)
   const endpoint = `http://localhost:8888/bettingGames/api/v1/game/read_single.php?id=${gameid}`;
   const [randomNum, setRandomNum] = useState({})
   const [spinning, setSpinning] = useState(false)
-
+  let randomSpin = Math.floor(Math.random() * 900) + 500
+  let easeout = 2
 
   //Load of odds selection
   useEffect(() =>
@@ -89,8 +90,16 @@ const Home=()=>
       const max = 20;
      
       setRandomNum({ randomNum: generateNumber(min,max) });
-      setSpinning(true)
+  
       setIsLoading(true)
+
+      setSpinning({ spinning: true });
+
+      // calcalute result after wheel stops spinning
+      // setTimeout(() =>
+      // {
+      //   this.getResult(randomSpin);
+      // }, 2000);
     
     }
   }
@@ -98,6 +107,7 @@ const Home=()=>
   {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
+ 
 
   return (
   
@@ -108,7 +118,8 @@ const Home=()=>
           <h1 className="header">Spin wheel Game </h1>
           <Container>
             <Row>
-              <Col><SpinWheel predictions={predictions} spinStatus={spinning}/></Col>
+              <Col><SpinWheel predictions={predictions} spinStatus={spinning} initRotate={randomSpin} initEaseout={easeout}/></Col>
+            
               <Col>
 
                 <form onSubmit={handleSubmit}>
@@ -134,9 +145,9 @@ const Home=()=>
                  
 
                   <PossibleWin stakeInput={data.stakeAmount} oddSelected={data.odds}  />
-                  <PlayerBalance game={gameid} player={userid} bettingSession={bettingId} gameStatus={"win"} betAmount={data.stakeAmount * data.odds} stakeAmount={data.stakeAmount}/>
+                  <PlayerBalance betAmount={data.stakeAmount * data.odds}/>
                   
-                  <Button type='submit'>Spin</Button>
+                  <Button type='submit' >Spin</Button>
                 </form>
               
               </Col>
