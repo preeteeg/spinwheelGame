@@ -1,7 +1,7 @@
 import React from 'react';
-import { auth } from '../utilities/auth'
+import { auth } from '../../utilities/auth'
 import {Redirect} from 'react-router-dom';
-import './Login/login.css'
+import './login.css'
 
 class Login extends React.Component
 {
@@ -28,7 +28,8 @@ class Login extends React.Component
         let fields = this.state.fields;
         fields[event.target.name] = event.target.value;
         this.setState({
-            fields
+            fields,
+            errors:{}
         });
     }
     validateForm()
@@ -42,16 +43,15 @@ class Login extends React.Component
             formIsValid = false;
             errors["email"] = "*Please enter your email-ID.";
         }
-        if (typeof fields["email"] !== "undefined")
-        {
+        
             //regular expression for email validation
             var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-            if (!pattern.test(fields["email"]))
+        if (!pattern.test(fields["email"]))
             {
                 formIsValid = false;
                 errors["email"] = "*Please enter valid email-ID.";
             }
-        }
+        
         if (!fields["password"])
         {
             formIsValid = false;
@@ -67,12 +67,14 @@ class Login extends React.Component
 
    async auth(e)
     {
-        e.preventDefault()
+       e.preventDefault()
+       
         if (this.validateForm())
         {
             let fields = {};
             fields["email"] = "";
             fields["password"] = "";
+            let errors = {};
             this.setState({ fields: fields });
 
             //  let info = {
@@ -81,21 +83,16 @@ class Login extends React.Component
             //      redirectToReferrer: false
             //  };
             const response = await auth(this.state);
+           
+            if (!response)
+            {
+                errors["access"] = "*Account does not exist.";
+                this.setState({errors:errors["access"] })
+            }
             this.setState({ ...this.state, result: response })
-                .response.json().then(errorsData =>
-                {
-                    console.log(errorsData);
-                })
-            
-            
-          
 
-            
+             
         }
-     
-    
-   
-
  }
 
 
@@ -107,14 +104,13 @@ class Login extends React.Component
         {
             return (<Redirect to={'/home'} />)
         }
-        else
-        {
-            
-        }
+       
+        
         return (
- 
+            
             <div id="login">
                 <form method="post" name="loginForm" onSubmit={this.auth} >
+                <div className="errorMsg">{this.state.errors.access}</div>
 
                 <label>Email</label>
                 <input type="text" name="email" onChange={this.handleChange} />

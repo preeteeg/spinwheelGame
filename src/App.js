@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect} from 'react';
 import { Jumbotron, Row, Container, Col, Button } from 'react-bootstrap';
-import Login from './components/Login'
+import Login from './components/Login/Login'
 import Home from './components/Home'
 
 import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
@@ -9,9 +9,6 @@ import './App.css';
 
 class App extends React.Component
 {
-
-  //const data = { email: 't@t.com', password: '123456' };
- 
 
   render()
   {

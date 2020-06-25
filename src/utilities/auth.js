@@ -23,22 +23,15 @@ const auth =  async(data) =>
             localStorage.setItem("dateLogin", dateLogin);
             localStorage.setItem("userId", userId);
             localStorage.setItem("playerName", playerName);
-            
-            return {
-                status: true,
-                message: response.data.message
-            }
-        }
-        
 
+           
+        }
+
+        return true
     } catch (e)
     {
-        console.log(e);
-       // return false
-        return {
-            status: false,
-            message: response.data.message
-        }
+        console.log(response.data.message);
+        return false
         
     }
 }
